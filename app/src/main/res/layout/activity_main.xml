@@ -9,9 +9,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.xm.demo.MainActivity">
 
-    <Button
+    <TextView
         android:id="@+id/hello"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Hello World!" />
 </RelativeLayout>
