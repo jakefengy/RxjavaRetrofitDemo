@@ -1,4 +1,4 @@
-package com.xm.demo.retrofit;
+package com.xm.demo.retrofit.extend;
 
 import android.util.Log;
 
@@ -9,7 +9,7 @@ import rx.Subscriber;
 /**
  * Created by lvxia on 2016-03-23.
  */
-public class CancelSubscriber<T> extends Subscriber<T> implements HttpCancelListener {
+public abstract class CancelSubscriber<T> extends Subscriber<T> implements HttpCancelListener {
 
     @Override
     public void onStart() {
@@ -28,6 +28,7 @@ public class CancelSubscriber<T> extends Subscriber<T> implements HttpCancelList
     @Override
     public void onNext(T t) {
         Log.i("CancelSubscriberTag", "onNext " + new Gson().toJson(t));
+        onEventNext(t);
     }
 
     @Override
@@ -39,5 +40,7 @@ public class CancelSubscriber<T> extends Subscriber<T> implements HttpCancelList
     public void onError(Throwable e) {
         Log.i("CancelSubscriberTag", "onError " + e.toString());
     }
+
+    public abstract void onEventNext(T t);
 
 }

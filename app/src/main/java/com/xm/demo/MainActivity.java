@@ -1,19 +1,20 @@
 package com.xm.demo;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.xm.demo.retrofit.CancelSubscriber;
+import com.xm.demo.retrofit.entity.SaveResult;
+import com.xm.demo.retrofit.extend.CancelSubscriber;
 import com.xm.demo.retrofit.RetrofitUtils;
 import com.xm.demo.retrofit.entity.LoginResult;
 import com.xm.demo.retrofit.entity.User;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit2.Retrofit;
 import rx.Subscriber;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        getCancelUser();
+        login();
     }
 
     private String token;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             public void onNext(LoginResult loginResult) {
                 token = loginResult.getAccessToken();
 
-                getUser();
+                createUser1(loginResult.getAccessToken(), loginResult.getUid(), "1");
 
                 print(new Gson().toJson(loginResult));
             }
@@ -98,46 +99,35 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // post
-
     CancelSubscriber<String> subscriber;
 
     private void getCancelUser() {
 
         subscriber = new CancelSubscriber<String>() {
-
             @Override
-            public void onStart() {
-                super.onStart();
-                print("onStart ");
-                Toast.makeText(MainActivity.this, "onStart", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNext(String s) {
-                super.onNext(s);
-                Toast.makeText(MainActivity.this, "onNext " + s, Toast.LENGTH_SHORT).show();
-                print("onNext " + s);
-            }
-
-            @Override
-            public void onCancelProgress() {
-                super.onCancelProgress();
-                Toast.makeText(MainActivity.this, "onCancelProgress", Toast.LENGTH_SHORT).show();
-                print("onCancelProgress ");
-            }
-
-            @Override
-            public void onCompleted() {
-                super.onCompleted();
-                Toast.makeText(MainActivity.this, "onCompleted", Toast.LENGTH_SHORT).show();
-                print("onCompleted ");
+            public void onEventNext(String s) {
+                print("Test Cancel " + s);
             }
         };
 
         RetrofitUtils.getInstance().getUser(subscriber);
 
     }
+
+    // post
+
+    private void createUser1(String token, String uid, String org) {
+        CancelSubscriber<SaveResult> subscriber = new CancelSubscriber<SaveResult>() {
+            @Override
+            public void onEventNext(SaveResult saveResult) {
+                print("createUser1 onCompleted " + saveResult.getContactid());
+            }
+        };
+
+        RetrofitUtils.getInstance().createUser1(token, uid, org, subscriber);
+    }
+
+    // tools
 
     private void print(String content) {
         msg = textView.getText().toString() + line;
