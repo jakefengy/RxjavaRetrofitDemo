@@ -19,7 +19,7 @@ import rx.schedulers.Schedulers;
  */
 public class RetrofitUtils {
 
-    private String baseUrl = "";
+    private String baseUrl = "http://120.24.247.177:8080/open/";
 
     private Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -28,8 +28,6 @@ public class RetrofitUtils {
             .build();
 
     private ZeusApis zeusApis;
-
-    private static RetrofitUtils instance;
 
     private RetrofitUtils() {
         retrofit = new Retrofit.Builder()
@@ -41,16 +39,14 @@ public class RetrofitUtils {
         zeusApis = retrofit.create(ZeusApis.class);
     }
 
+    //在访问HttpMethods时创建单例
+    private static class SingletonHolder {
+        private static final RetrofitUtils INSTANCE = new RetrofitUtils();
+    }
+
     //获取单例
     public static RetrofitUtils getInstance() {
-        if (instance == null) {
-            synchronized (RetrofitUtils.class) {
-                if (instance == null) {
-                    instance = new RetrofitUtils();
-                }
-            }
-        }
-        return instance;
+        return SingletonHolder.INSTANCE;
     }
 
     // Request
@@ -90,7 +86,27 @@ public class RetrofitUtils {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(callback);
 
+    }
 
+    public void getUser(CancelSubscriber<String> callback) {
+        Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                try {
+                    subscriber.onStart();
+                    Thread.sleep(5000);
+                    subscriber.onNext("Sleep 5s");
+                    Thread.sleep(5000);
+                    subscriber.onNext("Sleep 10s");
+                    Thread.sleep(5000);
+                    subscriber.onCompleted();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(callback);
     }
 
 }
