@@ -143,6 +143,8 @@ public class RetrofitUtils {
 
     }
 
+
+
     // Response Pretreatment
 
     private class MapFunc1<T> implements Func1<HttpResult<T>, T> {

@@ -45,4 +45,14 @@ public interface ZeusApis {
             @Query("uid") String uid,
             @Part("data") RequestBody params);
 
+    @Multipart
+    @POST
+    Observable<HttpResult<SaveResult>> postFile(
+            @Url String url,
+            @Query("AccessToken") String token,
+            @Query("organization") String organization,
+            @Query("uid") String uid
+
+    );
+
 }
