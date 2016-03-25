@@ -1,7 +1,6 @@
 package com.xm.demo.retrofit;
 
 import com.google.gson.Gson;
-import com.xm.demo.BuildConfig;
 import com.xm.demo.retrofit.entity.HttpResult;
 import com.xm.demo.retrofit.entity.LoginResult;
 import com.xm.demo.retrofit.entity.SaveParams;
@@ -9,13 +8,10 @@ import com.xm.demo.retrofit.entity.SaveResult;
 import com.xm.demo.retrofit.entity.User;
 import com.xm.demo.retrofit.extend.ApiException;
 import com.xm.demo.retrofit.extend.CancelSubscriber;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import com.xm.demo.retrofit.service.ZeusApis;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -41,13 +37,14 @@ public class RetrofitUtils {
     private RetrofitUtils() {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
+                .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
 
@@ -56,7 +53,6 @@ public class RetrofitUtils {
         zeusApis = retrofit.create(ZeusApis.class);
     }
 
-    //在访问HttpMethods时创建单例
     private static class SingletonHolder {
         private static final RetrofitUtils INSTANCE = new RetrofitUtils();
     }
@@ -128,7 +124,7 @@ public class RetrofitUtils {
 
     // Request post
 
-    public void createUser1(String token, String uid, String org, CancelSubscriber<SaveResult> callback) {
+    public void createUser1(String token, CancelSubscriber<SaveResult> callback) {
         SaveParams saveParams = new SaveParams();
         saveParams.username = "retrofit bbb";
         saveParams.mobile = "mobile";
@@ -137,9 +133,9 @@ public class RetrofitUtils {
         saveParams.dept = "dept";
         saveParams.post = "post";
 
-        String url = "addnewcontact?AccessToken=" + token + "&uid=" + uid + "&organization=" + org;
+        RequestBody body = RequestBody.create(MediaType.parse("data"), new Gson().toJson(saveParams));
 
-        zeusApis.createUser1(url, saveParams)
+        zeusApis.createUser1(baseUrl + "addnewcontact", token, "1", "535c3b52c78a417e92539a5012fcd1d0", body)
                 .subscribeOn(Schedulers.io())
                 .map(new MapFunc1<SaveResult>())
                 .observeOn(AndroidSchedulers.mainThread())

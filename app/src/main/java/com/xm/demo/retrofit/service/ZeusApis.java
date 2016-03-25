@@ -1,4 +1,4 @@
-package com.xm.demo.retrofit;
+package com.xm.demo.retrofit.service;
 
 import com.xm.demo.retrofit.entity.HttpResult;
 import com.xm.demo.retrofit.entity.LoginResult;
@@ -6,9 +6,12 @@ import com.xm.demo.retrofit.entity.SaveParams;
 import com.xm.demo.retrofit.entity.SaveResult;
 import com.xm.demo.retrofit.entity.User;
 
+import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
 import rx.Observable;
@@ -33,9 +36,13 @@ public interface ZeusApis {
             @Query("targetuid") String targetuid,
             @Query("timestamp") String timestamp);
 
+    @Multipart
     @POST
     Observable<HttpResult<SaveResult>> createUser1(
             @Url String url,
-            @Body SaveParams params);
+            @Query("AccessToken") String token,
+            @Query("organization") String organization,
+            @Query("uid") String uid,
+            @Part("data") RequestBody params);
 
 }

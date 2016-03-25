@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             public void onNext(LoginResult loginResult) {
                 token = loginResult.getAccessToken();
 
-                createUser1(loginResult.getAccessToken(), loginResult.getUid(), "1");
+                createUser1(loginResult.getAccessToken());
 
                 print(new Gson().toJson(loginResult));
             }
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     // post
 
-    private void createUser1(String token, String uid, String org) {
+    private void createUser1(String token) {
         CancelSubscriber<SaveResult> subscriber = new CancelSubscriber<SaveResult>() {
             @Override
             public void onEventNext(SaveResult saveResult) {
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        RetrofitUtils.getInstance().createUser1(token, uid, org, subscriber);
+        RetrofitUtils.getInstance().createUser1(token, subscriber);
     }
 
     // tools
@@ -136,7 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        subscriber.onCancelProgress();
+        if (subscriber != null)
+            subscriber.onCancelProgress();
         super.onDestroy();
     }
 }
